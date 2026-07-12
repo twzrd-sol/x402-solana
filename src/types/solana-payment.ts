@@ -1,5 +1,35 @@
 import type { VersionedTransaction } from '@solana/web3.js';
+import type { PaymentRequirements } from '@payai/x402/types';
 import type { SolanaNetworkSimple } from './x402-protocol';
+
+/**
+ * Context passed to {@link OnSelectedRequirements} once a Solana payment
+ * requirement has been selected and amount-checked, but BEFORE the transaction
+ * is signed.
+ */
+export interface SelectedRequirementsContext {
+  /** The Solana payment requirement the client is about to pay. */
+  selectedRequirements: PaymentRequirements;
+  /** Resource URL being paid for. */
+  resourceUrl: string;
+  /** Payment amount in atomic units. */
+  paymentAmount: bigint;
+  /** x402 protocol version detected for this response. */
+  protocolVersion: 1 | 2;
+}
+
+/**
+ * Optional callback invoked after a payment requirement is selected and
+ * amount-checked, but BEFORE the wallet signs. Intended for observability
+ * (logging/metrics) or pre-spend policy checks.
+ *
+ * Neutral by design: the SDK does not interpret the result. Return (or resolve)
+ * to proceed with signing; **throw (or reject) to abort payment before any
+ * signature is produced.** Any pass/fail semantics live entirely in the caller.
+ */
+export type OnSelectedRequirements = (
+  context: SelectedRequirementsContext,
+) => void | Promise<void>;
 
 /**
  * Solana-specific payment types (v2)
@@ -38,6 +68,13 @@ export interface X402ClientConfig {
    * @default globalThis.fetch
    */
   customFetch?: typeof fetch;
+  /**
+   * Optional hook invoked after a payment requirement is selected and
+   * amount-checked, but BEFORE the wallet signs. Use for observability or a
+   * pre-spend policy check. Throwing from the hook aborts payment before any
+   * signature is produced. See {@link OnSelectedRequirements}.
+   */
+  onSelectedRequirements?: OnSelectedRequirements;
   /** Enable verbose logging for debugging (default: false) */
   verbose?: boolean;
 }

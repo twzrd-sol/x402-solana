@@ -1,6 +1,6 @@
 import type { PaymentRequirements, PaymentRequired } from "@payai/x402/types";
 import { safeBase64Decode } from "@payai/x402/utils";
-import type { WalletAdapter } from "../types";
+import type { WalletAdapter, OnSelectedRequirements } from "../types";
 import { isSolanaNetwork } from "../types";
 import { createSolanaPaymentTransaction } from "./transaction-builder";
 import { createPaymentPayload, createPaymentPayloadV1 } from "../utils";
@@ -28,6 +28,8 @@ function decodePaymentRequiredHeader(header: string): PaymentRequired {
  * @param rpcUrl - Solana RPC URL
  * @param maxValue - Maximum payment amount in atomic units (0 = no limit)
  * @param verbose - Enable verbose logging (default: false)
+ * @param onSelectedRequirements - Optional hook fired after selection + amount
+ *   check, before signing. Throwing aborts payment before any signature.
  * @returns Wrapped fetch function with automatic payment handling
  */
 export function createPaymentFetch(
@@ -36,6 +38,7 @@ export function createPaymentFetch(
   rpcUrl: string,
   maxValue: bigint = BigInt(0),
   verbose: boolean = false,
+  onSelectedRequirements?: OnSelectedRequirements,
 ) {
   const log = (...args: unknown[]) => {
     if (verbose) console.log("[x402-solana]", ...args);
@@ -112,6 +115,18 @@ export function createPaymentFetch(
 
     // Get the resource URL for the payment payload
     const resourceUrl = typeof input === "string" ? input : input.url;
+
+    // Pre-sign hook: observability / pre-spend policy. Fires after selection and
+    // amount check, before any signature. Throwing aborts payment (nothing signed).
+    if (onSelectedRequirements) {
+      log("Invoking onSelectedRequirements hook (pre-sign)...");
+      await onSelectedRequirements({
+        selectedRequirements,
+        resourceUrl,
+        paymentAmount,
+        protocolVersion,
+      });
+    }
 
     log("Creating signed transaction...");
 

@@ -22,6 +22,7 @@ export class X402Client {
       rpcUrl,
       config.amount || BigInt(0),
       config.verbose || false,
+      config.onSelectedRequirements,
     );
   }
 

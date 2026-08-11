@@ -1,4 +1,4 @@
-import type { Network } from "@payai/x402/types";
+import type { Network } from "@x402/core/types";
 
 /**
  * Solana-specific x402 Protocol Types (v2)

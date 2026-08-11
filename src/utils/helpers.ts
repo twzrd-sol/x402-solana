@@ -3,7 +3,7 @@ import type {
   PaymentRequired,
   PaymentRequirements,
   PaymentPayload,
-} from "@payai/x402/types";
+} from "@x402/core/types";
 import {
   type TokenAsset,
   SOLANA_MAINNET_CAIP2,

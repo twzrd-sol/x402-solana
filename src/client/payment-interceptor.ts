@@ -1,5 +1,5 @@
-import type { PaymentRequirements, PaymentRequired } from "@payai/x402/types";
-import { safeBase64Decode } from "@payai/x402/utils";
+import type { PaymentRequirements, PaymentRequired } from "@x402/core/types";
+import { safeBase64Decode } from "@x402/core/utils";
 import type {
   BeforePaymentContext,
   BeforePaymentHook,

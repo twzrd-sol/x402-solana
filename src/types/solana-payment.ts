@@ -1,5 +1,5 @@
 import type { VersionedTransaction } from "@solana/web3.js";
-import type { PaymentRequirements, PaymentRequired } from "@payai/x402/types";
+import type { PaymentRequirements, PaymentRequired } from "@x402/core/types";
 import type { SolanaNetworkSimple } from "./x402-protocol";
 
 /**

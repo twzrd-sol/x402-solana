@@ -4,7 +4,7 @@ import type {
   VerifyResponse,
   SettleResponse,
   SupportedResponse,
-} from '@payai/x402/types';
+} from '@x402/core/types';
 import { getOrGenerateJwt } from '@payai/facilitator';
 import { isSolanaNetwork } from '../types';
 

@@ -4,7 +4,7 @@ import type {
   VerifyResponse,
   SettleResponse,
   Network,
-} from '@payai/x402/types';
+} from '@x402/core/types';
 import type { X402ServerConfig, RouteConfig, TokenAsset } from '../types';
 import { toCAIP2Network } from '../types';
 import { getDefaultRpcUrl, getDefaultTokenAsset } from '../utils';

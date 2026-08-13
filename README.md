@@ -242,6 +242,34 @@ wallet is never invoked on refusal) lives in
 npm run example:before-payment-guard
 ```
 
+#### Recommended pre-signing verification
+
+Optional hook that evaluates the selected `payTo` after requirement selection
+and before `signTransaction`. Use it to catch known malicious, drained, or
+non-responsive paywalls before committing on-chain gas/funds.
+
+A block must return `{ abort: true, reason }`. This client then throws its
+native `Error("Payment aborted by beforePayment hook: …")`. Do not throw a
+custom payload from the hook.
+
+```typescript
+import { createX402Client, asX402SolanaBeforePayment } from 'x402-solana/client';
+import { createTwzrdBeforePaymentHook } from 'twzrd-x402-gate';
+
+const client = createX402Client({
+  wallet,
+  network: 'solana',
+  beforePayment: asX402SolanaBeforePayment(
+    createTwzrdBeforePaymentHook({ refuseWashFlagged: true }),
+  ),
+});
+```
+
+`asX402SolanaBeforePayment` flattens x402 v2 `declaredResource.url` so the
+hook matches this package's 3.0.0 `BeforePaymentContext`. Install the optional
+gate with `npm i twzrd-x402-gate@0.8.16`. The sign path is unchanged when the
+hook is omitted.
+
 #### Using with a Proxy Server (CORS Bypass)
 
 If you're making requests from a browser to external APIs and encountering CORS issues, you can provide a custom fetch function that routes requests through your proxy server:

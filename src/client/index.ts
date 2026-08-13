@@ -38,6 +38,11 @@ export class X402Client {
 /**
  * Create an x402 client instance
  */
+export {
+  adaptDeclaredResource,
+  asX402SolanaBeforePayment,
+} from "../before-payment-adapter";
+
 export function createX402Client(config: X402ClientConfig): X402Client {
   return new X402Client(config);
 }
